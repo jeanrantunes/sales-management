@@ -1,0 +1,45 @@
+version: '3.8'
+
+networks:
+  default:
+
+services:
+  sales-db:
+    container_name:  sales-db
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQLDB_PASSWORD
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+    volumes:
+      - mysql-volume:/var/lib/mysql:rw
+      - ./sales-db:/docker-entrypoint-initdb.d/
+    networks:
+      - default
+      
+  sales-api:
+    container_name: sales-api
+    build: ./sales-api
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $NESTJS_APP_LOCAL_PORT:$NESTJS_APP_DOCKER_PORT
+    environment:
+      - DB_HOST=$MYSQLDB_HOST
+      - DB_USER=$MYSQLDB_USER
+      - DB_PASSWORD=$MYSQLDB_PASSWORD
+      - DB_DATABASE=$MYSQLDB_DATABASE
+      - DB_PORT=$MYSQLDB_DOCKER_PORT
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./sales-api:/app
+      - /app/node_modules
+    networks:
+      - default
+
+volumes: 
+  mysql-volume:
