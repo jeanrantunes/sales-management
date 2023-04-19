@@ -1,25 +1,21 @@
 version: '3.8'
 
-networks:
-  default:
-
-services:
+services:  
   sales-db:
-    container_name:  sales-db
-    image: mysql:5.7
+    image: mysql:latest # use latest version of mysql
+    container_name: sales-db # add a name for the container
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
-    env_file: ./.env
-    environment:
+    environment: # add default values, see docs for more info.
+      MYSQL_USER: $MYSQLDB_USER
       MYSQL_ROOT_PASSWORD: $MYSQLDB_PASSWORD
+      MYSQL_PASSWORD: $MYSQLDB_PASSWORD
+      MYSQL_DATABASE: $MYSQLDB_DATABASE # create this database on startup
+    volumes:
+      - my-db:/var/lib/mysql
     ports:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
-    volumes:
-      - mysql-volume:/var/lib/mysql:rw
-      - ./sales-db:/docker-entrypoint-initdb.d/
-    networks:
-      - default
-      
+  
   sales-api:
     container_name: sales-api
     build: ./sales-api
@@ -38,8 +34,6 @@ services:
     volumes:
       - ./sales-api:/app
       - /app/node_modules
-    networks:
-      - default
 
-volumes: 
-  mysql-volume:
+volumes: # add persistent data even if container is removed.
+  my-db:
