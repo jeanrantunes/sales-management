@@ -1,4 +1,4 @@
-import { Column, Decimal128, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum TransactionType {
   SALLER_PRODUCER = 1,
