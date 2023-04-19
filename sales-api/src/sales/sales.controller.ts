@@ -8,12 +8,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { createReadStream } from 'fs';
+import { SalesService } from './sales.service';
 
 @Controller('sales')
 export class SalesController {
+  constructor(private readonly salesService: SalesService) {}
+
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  addSalesTransactions(
+  uploadSalesTransactions(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -24,6 +28,6 @@ export class SalesController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file);
+    this.salesService.uploadSales(file);
   }
 }
