@@ -2,9 +2,7 @@ import { SalesModule } from './sales/sales.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { SalesEntity } from './sales/sales.entity';
+import { Sales } from './sales/sales.entity';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,13 +17,13 @@ import { SalesEntity } from './sales/sales.entity';
         username: 'root',
         password: 'password',
         database: 'SALES',
-        entities: [SalesEntity],
+        entities: [Sales],
         synchronize: true,
       }),
     }),
     SalesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }

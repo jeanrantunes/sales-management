@@ -1,6 +1,7 @@
 import {
   Controller,
   FileTypeValidator,
+  Get,
   HttpException,
   HttpStatus,
   MaxFileSizeValidator,
@@ -11,6 +12,9 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SalesService } from './sales.service';
+import { ResponseInsertInterceptors } from '../interceptors/response-insert.interceptor';
+import { ResponseFindInterceptors } from '../interceptors/response-find.interceptor';
+import { InsertResult } from 'typeorm';
 
 @Controller('sales')
 export class SalesController {
@@ -18,6 +22,7 @@ export class SalesController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(ResponseInsertInterceptors)
   async uploadSalesTransactions(
     @UploadedFile(
       new ParseFilePipe({
@@ -28,10 +33,9 @@ export class SalesController {
       }),
     )
     file: Express.Multer.File,
-  ) {
+  ): Promise<InsertResult[]> {
     try {
-      const i = await this.salesService.uploadSales(file)
-      console.log(i)
+      return await this.salesService.uploadSales(file)
     } catch (err) {
 
       throw new HttpException({
@@ -42,5 +46,11 @@ export class SalesController {
         cause: err
       });
     }
+  }
+
+  @Get('/')
+  @UseInterceptors(ResponseFindInterceptors)
+  async findAll() {
+    return this.salesService.getAllSales()
   }
 }
