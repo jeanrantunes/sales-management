@@ -14,11 +14,11 @@ import { SalesEntity } from './sales/sales.entity';
       useFactory: (configService: ConfigService) => ({
         name: 'default',
         type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: +configService.get('DB_PORT'),
-        username: configService.get('DB_USER'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
+        host: 'localhost',
+        port: 3306,
+        username: 'root',
+        password: 'password',
+        database: 'SALES',
         entities: [SalesEntity],
         synchronize: true,
       }),
@@ -28,4 +28,4 @@ import { SalesEntity } from './sales/sales.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

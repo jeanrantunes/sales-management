@@ -1,6 +1,8 @@
 import {
   Controller,
   FileTypeValidator,
+  HttpException,
+  HttpStatus,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -8,16 +10,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { createReadStream } from 'fs';
 import { SalesService } from './sales.service';
 
 @Controller('sales')
 export class SalesController {
-  constructor(private readonly salesService: SalesService) {}
+  constructor(private readonly salesService: SalesService) { }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadSalesTransactions(
+  async uploadSalesTransactions(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -28,6 +29,18 @@ export class SalesController {
     )
     file: Express.Multer.File,
   ) {
-    this.salesService.uploadSales(file);
+    try {
+      const i = await this.salesService.uploadSales(file)
+      console.log(i)
+    } catch (err) {
+
+      throw new HttpException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: err.message,
+        line: err.line
+      }, HttpStatus.INTERNAL_SERVER_ERROR, {
+        cause: err
+      });
+    }
   }
 }

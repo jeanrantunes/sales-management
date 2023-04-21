@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum TransactionType {
+export enum OperationType {
   SALLER_PRODUCER = 1,
   AFFILIATE_SELLING = 2,
   COMMISSION_PAID = 3,
@@ -14,11 +14,11 @@ export class SalesEntity {
 
   @Column({
     type: 'set',
-    enum: TransactionType,
+    enum: OperationType,
   })
-  productType: number;
+  productType: OperationType;
 
-  @Column('date')
+  @Column('datetime')
   date: Date;
 
   @Column('decimal')
@@ -27,7 +27,6 @@ export class SalesEntity {
   @Column({
     type: 'varchar',
     length: 150,
-    unique: true,
   })
   seller: string;
 }
